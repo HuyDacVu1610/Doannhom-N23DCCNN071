@@ -1,14 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 
-// 1. Interface
-public interface IFileHandler {
-    void ghiFile(ArrayList<SinhVien> ds, String tenFile) throws Exception;
-    ArrayList<SinhVien> docFile(String tenFile) throws Exception;
-}
-
-// 2. Class thực thi (Implement) - Bạn có thể tách class này ra file riêng nếu muốn
-class FileService implements IFileHandler {
+public class FileService implements IFileHandler {
     @Override
     public void ghiFile(ArrayList<SinhVien> ds, String tenFile) throws Exception {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(tenFile))) {
@@ -20,7 +13,6 @@ class FileService implements IFileHandler {
                 sb.append(sv.getGioiTinh()).append(",");
                 sb.append(sv.getNganhHoc()).append(",");
                 
-                // Xử lý điểm
                 ArrayList<Double> diem = sv.getDanhSachDiem();
                 if (diem != null && !diem.isEmpty()) {
                     for (int i = 0; i < diem.size(); i++) {
@@ -47,8 +39,13 @@ class FileService implements IFileHandler {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length >= 5) {
-                    SinhVien sv = new SinhVien(parts[0], parts[1], parts[2], parts[3], parts[4]);
-                    // Đọc điểm
+                    SinhVien sv = new SinhVien(); 
+                    sv.setMssv(parts[0]);
+                    sv.setHoTen(parts[1]);
+                    sv.setNgaySinh(parts[2]);
+                    sv.setGioiTinh(parts[3]);
+                    sv.setNganhHoc(parts[4]);
+                    
                     if (parts.length > 5 && !parts[5].isEmpty()) {
                         String[] diemParts = parts[5].split("\\|");
                         ArrayList<Double> dsDiem = new ArrayList<>();

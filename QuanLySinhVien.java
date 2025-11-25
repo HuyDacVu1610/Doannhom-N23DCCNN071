@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -192,4 +193,92 @@ public class QuanLySinhVien implements IFileHandler, IThongKe {
         if (danhSachSV.isEmpty()) return null;
         return Collections.min(danhSachSV, Comparator.comparingDouble(SinhVien::tinhDiemTrungBinh));
     }
+=======
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class QuanLySinhVien {
+    private ArrayList<SinhVien> danhSachSV;
+
+    public QuanLySinhVien() {
+        this.danhSachSV = new ArrayList<>();
+    }
+
+    // --- Getter & Setter cho danh sách (Để FileService có thể lấy/gán dữ liệu) ---
+    public ArrayList<SinhVien> getDanhSachSV() {
+        return danhSachSV;
+    }
+
+    public void setDanhSachSV(ArrayList<SinhVien> danhSachSV) {
+        this.danhSachSV = danhSachSV;
+    }
+
+    // ================== 1. CHỨC NĂNG THÊM ==================
+    public boolean themSinhVien(SinhVien sv) {
+        if (sv == null || timSinhVienTheoMSSV(sv.getMssv()) != null) {
+            return false; // Trùng MSSV hoặc null
+        }
+        danhSachSV.add(sv);
+        return true;
+    }
+
+    // ================== 2. CHỨC NĂNG SỬA ==================
+    public boolean suaSinhVien(String mssv, SinhVien svMoi) {
+        SinhVien svCu = timSinhVienTheoMSSV(mssv);
+        if (svCu == null) {
+            return false;
+        }
+        svCu.setHoTen(svMoi.getHoTen());
+        svCu.setNgaySinh(svMoi.getNgaySinh());
+        svCu.setGioiTinh(svMoi.getGioiTinh());
+        svCu.setNganhHoc(svMoi.getNganhHoc());
+        svCu.setDanhSachDiem(new ArrayList<>(svMoi.getDanhSachDiem()));
+        return true;
+    }
+
+    // ================== 3. CHỨC NĂNG XÓA ==================
+    public boolean xoaSinhVien(String mssv) {
+        SinhVien sv = timSinhVienTheoMSSV(mssv);
+        if (sv == null) {
+            return false;
+        }
+        danhSachSV.remove(sv);
+        return true;
+    }
+
+    // ================== 4. CHỨC NĂNG TÌM KIẾM ==================
+    public SinhVien timSinhVienTheoMSSV(String mssv) {
+        for (SinhVien sv : danhSachSV) {
+            if (sv.getMssv().equalsIgnoreCase(mssv.trim())) {
+                return sv;
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<SinhVien> timSinhVienTheoTen(String ten) {
+        ArrayList<SinhVien> ketQua = new ArrayList<>();
+        for (SinhVien sv : danhSachSV) {
+            if (sv.getHoTen().toLowerCase().contains(ten.toLowerCase())) {
+                ketQua.add(sv);
+            }
+        }
+        return ketQua;
+    }
+
+    // ================== 5. SẮP XẾP (Hỗ trợ hiển thị) ==================
+    public void sapXepTheoTen() {
+        Collections.sort(danhSachSV, (sv1, sv2) -> {
+            String ten1 = sv1.getHoTen().substring(sv1.getHoTen().lastIndexOf(" ") + 1);
+            String ten2 = sv2.getHoTen().substring(sv2.getHoTen().lastIndexOf(" ") + 1);
+            return ten1.compareToIgnoreCase(ten2);
+        });
+    }
+    
+    public void sapXepTheoDiemTB() {
+        Collections.sort(danhSachSV, (sv1, sv2) -> 
+            Double.compare(sv2.tinhDiemTrungBinh(), sv1.tinhDiemTrungBinh())
+        );
+    }
+>>>>>>> ff4cd85 (update)
 }

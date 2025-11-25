@@ -3,15 +3,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-// 1. Interface
-public interface IThongKe {
-    String thongKeNganh(ArrayList<SinhVien> ds);
-    String thongKeGioiTinh(ArrayList<SinhVien> ds);
-    String topSinhVien(ArrayList<SinhVien> ds);
-}
-
-// 2. Class thực thi (Implement)
-class ThongKeService implements IThongKe {
+public class ThongKeService implements IThongKe {
     @Override
     public String thongKeNganh(ArrayList<SinhVien> ds) {
         if (ds.isEmpty()) return "Danh sách trống.";

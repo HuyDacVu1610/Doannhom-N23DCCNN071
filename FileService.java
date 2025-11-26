@@ -39,13 +39,7 @@ public class FileService implements IFileHandler {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length >= 5) {
-                    SinhVien sv = new SinhVien(); 
-                    sv.setMssv(parts[0]);
-                    sv.setHoTen(parts[1]);
-                    sv.setNgaySinh(parts[2]);
-                    sv.setGioiTinh(parts[3]);
-                    sv.setNganhHoc(parts[4]);
-                    
+                    SinhVien sv = new SinhVien(parts[0], parts[1], parts[2], parts[3], parts[4]);
                     if (parts.length > 5 && !parts[5].isEmpty()) {
                         String[] diemParts = parts[5].split("\\|");
                         ArrayList<Double> dsDiem = new ArrayList<>();

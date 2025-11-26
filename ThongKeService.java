@@ -26,7 +26,7 @@ public class ThongKeService implements IThongKe {
         int nam = 0, nu = 0, khac = 0;
         for (SinhVien sv : ds) {
             if (sv.getGioiTinh().equalsIgnoreCase("Nam")) nam++;
-            else if (sv.getGioiTinh().equalsIgnoreCase("Nu")) nu++;
+            else if (sv.getGioiTinh().equalsIgnoreCase("Nữ")) nu++;
             else khac++;
         }
         return String.format("=== THỐNG KÊ GIỚI TÍNH ===\n- Nam: %d\n- Nữ: %d\n- Khác: %d", nam, nu, khac);

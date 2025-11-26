@@ -149,6 +149,7 @@ public class Giaodienqlsv extends JFrame {
         
         btnTimMSSV = new JButton("Tìm theo MSSV");
         btnTimTen = new JButton("Tìm theo Tên");
+        btnTimNganh = new JButton("Tìm theo Ngành"); // Thêm nếu dùng
         
         btnSapXepTen = new JButton("Sắp Xếp Tên");
         btnSapXepTB = new JButton("Sắp Xếp Điểm");
@@ -160,9 +161,9 @@ public class Giaodienqlsv extends JFrame {
         btnGhiFile = new JButton("Lưu File");
         btnDocFile = new JButton("Đọc File");
 
-        // Add buttons
-        funcPanel.add(btnThem); funcPanel.add(btnSua); funcPanel.add(btnXoa); funcPanel.add(btnLamMoi); funcPanel.add(new JLabel("")); // Spacer
-        funcPanel.add(btnTimMSSV); funcPanel.add(btnTimTen); funcPanel.add(btnSapXepTen); funcPanel.add(btnSapXepTB); funcPanel.add(new JLabel("")); // Spacer
+        // Add buttons (thêm btnTimNganh)
+        funcPanel.add(btnThem); funcPanel.add(btnSua); funcPanel.add(btnXoa); funcPanel.add(btnLamMoi); funcPanel.add(new JLabel(""));
+        funcPanel.add(btnTimMSSV); funcPanel.add(btnTimTen); funcPanel.add(btnTimNganh); funcPanel.add(btnSapXepTen); funcPanel.add(btnSapXepTB);
         funcPanel.add(btnGhiFile); funcPanel.add(btnDocFile); funcPanel.add(btnThongKeNganh); funcPanel.add(btnThongKeGioiTinh); funcPanel.add(btnXepHang);
 
         add(funcPanel, BorderLayout.SOUTH);
@@ -180,26 +181,15 @@ public class Giaodienqlsv extends JFrame {
         ganSuKienChoCacNut();
     }
 
-    // ================== CÁC HÀM XỬ LÝ LOGIC ==================
-
     private void ganSuKienChoCacNut() {
-        // 1. Thêm
         btnThem.addActionListener(e -> xuLyThem());
-
-        // 2. Sửa
         btnSua.addActionListener(e -> xuLySua());
-
-        // 3. Xóa
         btnXoa.addActionListener(e -> xuLyXoa());
-
-        // 4. Làm mới
         btnLamMoi.addActionListener(e -> xoaTrangForm());
-
-        // 5. Tìm kiếm
         btnTimMSSV.addActionListener(e -> xuLyTimKiemMSSV());
         btnTimTen.addActionListener(e -> xuLyTimKiemTen());
-
-        // 6. Sắp xếp
+        // Thêm nếu dùng
+        btnTimNganh.addActionListener(e -> xuLyTimKiemNganh());
         btnSapXepTen.addActionListener(e -> {
             quanLy.sapXepTheoTen();
             capNhatBang(quanLy.getDanhSachSV());
@@ -208,12 +198,8 @@ public class Giaodienqlsv extends JFrame {
             quanLy.sapXepTheoDiemTB();
             capNhatBang(quanLy.getDanhSachSV());
         });
-
-        // 7. File
         btnGhiFile.addActionListener(e -> saveFile());
         btnDocFile.addActionListener(e -> loadFile());
-
-        // 8. Thống kê (Gọi qua thongKeService)
         btnThongKeNganh.addActionListener(e -> {
             String kq = thongKeService.thongKeNganh(quanLy.getDanhSachSV());
             txtThongKe.setText(kq);
@@ -228,7 +214,6 @@ public class Giaodienqlsv extends JFrame {
         });
     }
 
-    // --- Helper: Tạo đối tượng SinhVien từ Form ---
     private SinhVien taoSVTufrom() {
         String mssv = txtMSSV.getText().trim();
         String hoTen = txtHoTen.getText().trim();
@@ -242,10 +227,9 @@ public class Giaodienqlsv extends JFrame {
         sv.setMssv(mssv);
         sv.setHoTen(hoTen);
         sv.setNgaySinh(txtNgaySinh.getText().trim());
-        sv.setGioiTinh(male.isSelected() ? "Nam" : "Nu");
+        sv.setGioiTinh(male.isSelected() ? "Nam" : "Nữ");
         sv.setNganhHoc(txtNganh.getText().trim());
 
-        // Xử lý điểm
         String strDiem = txtDiem.getText().trim();
         ArrayList<Double> listDiem = new ArrayList<>();
         if (!strDiem.isEmpty()) {
@@ -263,7 +247,6 @@ public class Giaodienqlsv extends JFrame {
         return sv;
     }
 
-    // --- Logic Thêm/Sửa/Xóa ---
     private void xuLyThem() {
         SinhVien sv = taoSVTufrom();
         if (sv != null) {
@@ -308,11 +291,10 @@ public class Giaodienqlsv extends JFrame {
         }
     }
 
-    // --- Logic Tìm kiếm ---
     private void xuLyTimKiemMSSV() {
         String mssv = JOptionPane.showInputDialog(this, "Nhập MSSV cần tìm:");
         if (mssv != null && !mssv.isEmpty()) {
-            SinhVien sv = quanLy.timSinhVienTheoMSSV(mssv);
+            SinhVien sv = quanLy.timSinhVienTheoMssv(mssv);
             ArrayList<SinhVien> kq = new ArrayList<>();
             if (sv != null) kq.add(sv);
             capNhatBang(kq);
@@ -329,7 +311,16 @@ public class Giaodienqlsv extends JFrame {
         }
     }
 
-    // --- Cập nhật bảng ---
+    // Thêm nếu dùng btnTimNganh
+    private void xuLyTimKiemNganh() {
+        String nganh = JOptionPane.showInputDialog(this, "Nhập ngành cần tìm:");
+        if (nganh != null && !nganh.isEmpty()) {
+            ArrayList<SinhVien> kq = quanLy.timSinhVienTheoNganh(nganh);
+            capNhatBang(kq);
+            if (kq.isEmpty()) JOptionPane.showMessageDialog(this, "Không tìm thấy!");
+        }
+    }
+
     private void capNhatBang(ArrayList<SinhVien> danhSach) {
         tableModel.setRowCount(0);
         for (SinhVien sv : danhSach) {
@@ -339,18 +330,16 @@ public class Giaodienqlsv extends JFrame {
                 sv.getNgaySinh(),
                 sv.getGioiTinh(),  
                 sv.getNganhHoc(),
-                sv.getDanhSachDiem().toString(), // Hiển thị list điểm
-                String.format("%.2f", sv.tinhDiemTrungBinh()) // Hàm tính điểm TB của SinhVien
+                sv.getDanhSachDiem().toString(), 
+                String.format("%.2f", sv.tinhDiemTrungBinh()) 
             });
         }
     }
 
-    // --- Xử lý File (Gọi qua fileService) ---
     private void saveFile() {
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = fileChooser.getSelectedFile();
-                // Gọi service để ghi file, truyền vào danh sách lấy từ quanLy
                 fileService.ghiFile(quanLy.getDanhSachSV(), file.getPath());
                 JOptionPane.showMessageDialog(this, "Lưu file thành công!");
             } catch (Exception e) {
@@ -364,11 +353,8 @@ public class Giaodienqlsv extends JFrame {
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = fileChooser.getSelectedFile();
-                // Gọi service để đọc file -> Trả về ArrayList
                 ArrayList<SinhVien> dsMoi = fileService.docFile(file.getPath());
-                // Cập nhật vào quản lý
                 quanLy.setDanhSachSV(dsMoi);
-                // Cập nhật lên bảng
                 capNhatBang(dsMoi);
                 JOptionPane.showMessageDialog(this, "Đọc file thành công!");
             } catch (Exception e) {
@@ -388,9 +374,8 @@ public class Giaodienqlsv extends JFrame {
             if (gt.equalsIgnoreCase("Nam")) male.setSelected(true); else female.setSelected(true);
             txtNganh.setText(table.getValueAt(row, 4).toString());
             
-            // Xử lý chuỗi điểm [8.0, 9.0] thành 8.0, 9.0
             String diemRaw = table.getValueAt(row, 5).toString();
-            txtDiem.setText(diemRaw.replace("[", "").replace("]", ""));
+            txtDiem.setText(diemRaw.replace("[", "").replace("]", "").replace(" ", ""));
         }
     }
     
@@ -404,19 +389,11 @@ public class Giaodienqlsv extends JFrame {
         capNhatBang(quanLy.getDanhSachSV()); // Reset bảng về full danh sách
     }
 
-    // --- MAIN ---
     public static void main(String[] args) {
-        // Chạy trên luồng giao diện của Swing
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                // 1. KHỞI TẠO ĐỐI TƯỢNG Ở ĐÂY
-                Giaodienqlsv app = new Giaodienqlsv(); 
-                
-                // 2. CHO NÓ HIỆN LÊN
-                app.setVisible(true);
-                
-                System.out.println("Đã khởi tạo xong đối tượng Giaodienqlsv!");
+                new LoginForm().setVisible(true);
             }
         });
     }

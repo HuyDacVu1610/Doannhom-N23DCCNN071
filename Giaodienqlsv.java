@@ -15,7 +15,10 @@ class LoginForm extends JFrame {
         setTitle("ĐĂNG NHẬP HỆ THỐNG");
         setSize(350, 180);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Căn giữa màn hình
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screen.width - getWidth()) / 2;
+        int y = (screen.height - getHeight()) / 2;
+        setLocation(x, y); // Căn giữa màn hình
         setLayout(new BorderLayout(10, 10));
 
         // Panel nhập liệu
@@ -88,10 +91,13 @@ public class Giaodienqlsv extends JFrame {
         thongKeService = new ThongKeService(); // Class thực thi IThongKe
 
         // --- CẤU HÌNH GIAO DIỆN ---
-        setTitle("CHƯƠNG TRÌNH QUẢN LÝ SINH VIÊN (MVC)");
+        setTitle("CHƯƠNG TRÌNH QUẢN LÝ SINH VIÊN");
         setSize(1200, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screen.width - getWidth()) / 2;
+        int y = (screen.height - getHeight()) / 2;
+        setLocation(x, y); // Căn giữa màn hình
 
         // 1. FORM NHẬP LIỆU (NORTH)
         JPanel inputPanel = new JPanel(new GridLayout(6, 2, 10, 10));

@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package connectdb;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -79,17 +84,14 @@ public class QuanLySinhVien {
         return ketQua;
     }
 
-    public void sapXepTheoTen() {
-        Collections.sort(danhSachSV, (sv1, sv2) -> {
-            String ten1 = sv1.getHoTen().substring(sv1.getHoTen().lastIndexOf(" ") + 1);
-            String ten2 = sv2.getHoTen().substring(sv2.getHoTen().lastIndexOf(" ") + 1);
-            return ten1.compareToIgnoreCase(ten2);
-        });
-    }
-    
-    public void sapXepTheoDiemTB() {
-        Collections.sort(danhSachSV, (sv1, sv2) -> 
-            Double.compare(sv2.tinhDiemTrungBinh(), sv1.tinhDiemTrungBinh())
-        );
-    }
+public void sapXepTheoTen() {
+    // Lấy lại list từ DB đã sort sẵn theo tên
+    this.danhSachSV = new ArrayList<>(dao.getAllSortedByName());
+}
+
+public void sapXepTheoDiemTB() {
+    // Lấy lại list từ DB đã sort sẵn theo điểm trung bình
+    this.danhSachSV = new ArrayList<>(dao.getAllSortedByDiemTB());
+}
+
 }

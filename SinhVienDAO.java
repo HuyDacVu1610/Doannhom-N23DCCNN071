@@ -1,9 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package connectdb;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,23 +51,50 @@ public class SinhVienDAO extends BaseDAO {
     }
 
     // 3. Sửa
-    public boolean update(SinhVien sv) {
-        Connection conn = getConnection();
-        String sql = "UPDATE sinhvien SET ten=?, diem=? WHERE id=?";
-        PreparedStatement ps = null;
-        try {
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, sv.getTen());
-            ps.setDouble(2, sv.getDiem());
-            ps.setString(3, sv.getId());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            closeConnection(conn, ps, null);
-        }
+    public boolean update(String mssvCu, SinhVien svMoi) {
+    Connection conn = getConnection();
+
+    String sql = "UPDATE sinhvien SET "
+               + "mssv = ?, "
+               + "hoTen = ?, "
+               + "ngaySinh = ?, "
+               + "gioiTinh = ?, "
+               + "nganhHoc = ?, "
+               + "diem1 = ?, "
+               + "diem2 = ?, "
+               + "diem3 = ? "
+               + "WHERE mssv = ?";
+
+    PreparedStatement ps = null;
+
+    try {
+        ps = conn.prepareStatement(sql);
+
+        // giá trị mới
+        ps.setString(1, svMoi.getMssv());
+        ps.setString(2, svMoi.getHoTen());
+        ps.setString(3, svMoi.getNgaySinh());
+        ps.setString(4, svMoi.getGioiTinh());
+        ps.setString(5, svMoi.getNganhHoc());
+
+        ps.setDouble(6, svMoi.getDanhSachDiem().get(0));
+        ps.setDouble(7, svMoi.getDanhSachDiem().get(1));
+        ps.setDouble(8, svMoi.getDanhSachDiem().get(2));
+
+        // WHERE mssv = mssvCu
+        ps.setString(9, mssvCu);
+
+        return ps.executeUpdate() > 0;
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+
+    } finally {
+        closeConnection(conn, ps, null);
     }
+}
+
 
     // 4. Xóa
     public boolean delete(String id) {

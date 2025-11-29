@@ -3,7 +3,7 @@ package connectdb;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class SinhVien extends Nguoi implements Serializable {
+public class SinhVien extends Nguoi  {
 
     private String mssv;
     private String nganhHoc;

@@ -1,17 +1,19 @@
-<<<<<<< HEAD
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package connectdb;
+
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Map;
 
 public class QuanLySinhVien {
+
     private ArrayList<SinhVien> danhSachSV;
     private SinhVienDAO dao = new SinhVienDAO();
 
     public QuanLySinhVien() {
+        // Lấy danh sách ban đầu từ DB
         this.danhSachSV = new ArrayList<>(dao.getAll());
     }
 
@@ -23,175 +25,88 @@ public class QuanLySinhVien {
         this.danhSachSV = danhSachSV;
     }
 
+    // ================== CRUD ==================
+
     public boolean themSinhVien(SinhVien sv) {
-        if (sv == null || timSinhVienTheoMssv(sv.getMssv()) != null) {
-            return false;
-        }
-        danhSachSV.add(sv);
-        dao.insert(sv);
-        return true;
-    }
-
-    public boolean suaSinhVien(String mssv, SinhVien svMoi) {
-        SinhVien svCu = timSinhVienTheoMssv(mssv);
-        if (svCu == null) {
-            return false;
-        }
-        dao.update(mssv, svMoi);
-        svCu.setHoTen(svMoi.getHoTen());
-        svCu.setNgaySinh(svMoi.getNgaySinh());
-        svCu.setGioiTinh(svMoi.getGioiTinh());
-        svCu.setNganhHoc(svMoi.getNganhHoc());
-        svCu.setDanhSachDiem(new ArrayList<>(svMoi.getDanhSachDiem()));
-        return true;
-    }
-
-    public boolean xoaSinhVien(String mssv) {
-        SinhVien sv = timSinhVienTheoMssv(mssv);
         if (sv == null) {
             return false;
         }
-        danhSachSV.remove(sv);
-        dao.delete(mssv);
-        return true;
-    }
-
-    public SinhVien timSinhVienTheoMssv(String mssv) {
-        for (SinhVien sv : danhSachSV) {
-            if (sv.getMssv().equalsIgnoreCase(mssv.trim())) {
-                return sv;
-            }
+        // kiểm tra trùng MSSV trên DB
+        if (dao.findByMssv(sv.getMssv()) != null) {
+            return false;
         }
-        return null;
-    }
-
-    public ArrayList<SinhVien> timSinhVienTheoTen(String ten) {
-        ArrayList<SinhVien> ketQua = new ArrayList<>();
-        for (SinhVien sv : danhSachSV) {
-            if (sv.getHoTen().toLowerCase().contains(ten.toLowerCase())) {
-                ketQua.add(sv);
-            }
+        // insert DB
+        if (!dao.insert(sv)) {
+            return false;
         }
-        return ketQua;
-    }
-
-    public ArrayList<SinhVien> timSinhVienTheoNganh(String nganh) {
-        ArrayList<SinhVien> ketQua = new ArrayList<>();
-        for (SinhVien sv : danhSachSV) {
-            if (sv.getNganhHoc().toLowerCase().contains(nganh.toLowerCase())) {
-                ketQua.add(sv);
-            }
-        }
-        return ketQua;
-    }
-
-public void sapXepTheoTen() {
-    // Lấy lại list từ DB đã sort sẵn theo tên
-    this.danhSachSV = new ArrayList<>(dao.getAllSortedByName());
-}
-
-public void sapXepTheoDiemTB() {
-    // Lấy lại list từ DB đã sort sẵn theo điểm trung bình
-    this.danhSachSV = new ArrayList<>(dao.getAllSortedByDiemTB());
-}
-
-}
-=======
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package connectdb;
-import java.util.ArrayList;
-import java.util.Collections;
-
-public class QuanLySinhVien {
-    private ArrayList<SinhVien> danhSachSV;
-    private SinhVienDAO dao = new SinhVienDAO();
-
-    public QuanLySinhVien() {
+        // refresh list từ DB
         this.danhSachSV = new ArrayList<>(dao.getAll());
-    }
-
-    public ArrayList<SinhVien> getDanhSachSV() {
-        return danhSachSV;
-    }
-
-    public void setDanhSachSV(ArrayList<SinhVien> danhSachSV) {
-        this.danhSachSV = danhSachSV;
-    }
-
-    public boolean themSinhVien(SinhVien sv) {
-        if (sv == null || timSinhVienTheoMssv(sv.getMssv()) != null) {
-            return false;
-        }
-        danhSachSV.add(sv);
-        dao.insert(sv);
         return true;
     }
 
     public boolean suaSinhVien(String mssv, SinhVien svMoi) {
-        SinhVien svCu = timSinhVienTheoMssv(mssv);
-        if (svCu == null) {
+        // kiểm tra tồn tại trên DB
+        if (dao.findByMssv(mssv) == null) {
             return false;
         }
-        dao.update(mssv, svMoi);
-        svCu.setHoTen(svMoi.getHoTen());
-        svCu.setNgaySinh(svMoi.getNgaySinh());
-        svCu.setGioiTinh(svMoi.getGioiTinh());
-        svCu.setNganhHoc(svMoi.getNganhHoc());
-        svCu.setDanhSachDiem(new ArrayList<>(svMoi.getDanhSachDiem()));
+        // update DB
+        if (!dao.update(mssv, svMoi)) {
+            return false;
+        }
+        // refresh list từ DB
+        this.danhSachSV = new ArrayList<>(dao.getAll());
         return true;
     }
 
     public boolean xoaSinhVien(String mssv) {
-        SinhVien sv = timSinhVienTheoMssv(mssv);
-        if (sv == null) {
+        // kiểm tra tồn tại trên DB
+        if (dao.findByMssv(mssv) == null) {
             return false;
         }
-        danhSachSV.remove(sv);
-        dao.delete(mssv);
+        // xóa DB
+        if (!dao.delete(mssv)) {
+            return false;
+        }
+        // refresh list từ DB
+        this.danhSachSV = new ArrayList<>(dao.getAll());
         return true;
     }
 
+    // ================== TÌM KIẾM ==================
+
     public SinhVien timSinhVienTheoMssv(String mssv) {
-        for (SinhVien sv : danhSachSV) {
-            if (sv.getMssv().equalsIgnoreCase(mssv.trim())) {
-                return sv;
-            }
-        }
-        return null;
+        return dao.findByMssv(mssv);
     }
 
     public ArrayList<SinhVien> timSinhVienTheoTen(String ten) {
-        ArrayList<SinhVien> ketQua = new ArrayList<>();
-        for (SinhVien sv : danhSachSV) {
-            if (sv.getHoTen().toLowerCase().contains(ten.toLowerCase())) {
-                ketQua.add(sv);
-            }
-        }
-        return ketQua;
+        return new ArrayList<>(dao.searchByName(ten));
     }
 
     public ArrayList<SinhVien> timSinhVienTheoNganh(String nganh) {
-        ArrayList<SinhVien> ketQua = new ArrayList<>();
-        for (SinhVien sv : danhSachSV) {
-            if (sv.getNganhHoc().toLowerCase().contains(nganh.toLowerCase())) {
-                ketQua.add(sv);
-            }
-        }
-        return ketQua;
+        return new ArrayList<>(dao.searchByNganh(nganh));
     }
 
-public void sapXepTheoTen() {
-    // Lấy lại list từ DB đã sort sẵn theo tên
-    this.danhSachSV = new ArrayList<>(dao.getAllSortedByName());
-}
+    // ================== SẮP XẾP ==================
 
-public void sapXepTheoDiemTB() {
-    // Lấy lại list từ DB đã sort sẵn theo điểm trung bình
-    this.danhSachSV = new ArrayList<>(dao.getAllSortedByDiemTB());
-}
+    public void sapXepTheoTen() {
+        // Lấy lại list từ DB đã sort sẵn theo tên
+        this.danhSachSV = new ArrayList<>(dao.getAllSortedByName());
+    }
 
+    public void sapXepTheoDiemTB() {
+        // Lấy lại list từ DB đã sort sẵn theo điểm trung bình
+        this.danhSachSV = new ArrayList<>(dao.getAllSortedByDiemTB());
+    }
+
+    // ================== TOP & THỐNG KÊ ==================
+
+    // Lấy TOP N sinh viên điểm cao (danhSachSV chỉ chứa top N)
+    public void layTopSinhVien(int soLuong) {
+        this.danhSachSV = new ArrayList<>(dao.getTopSinhVien(soLuong));
+    }
+
+    // Thống kê số lượng SV theo giới tính (Nam/Nữ/...)
+    public Map<String, Integer> thongKeTheoGioiTinh() {
+        return dao.thongKeTheoGioiTinh();
+    }
 }
->>>>>>> 02cc1f1 (update)

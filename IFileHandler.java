@@ -1,3 +1,9 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -45,9 +51,18 @@ class FileService implements IFileHandler {
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
+                String[] parts = line.split(","); 
                 if (parts.length >= 5) {
-                    SinhVien sv = new SinhVien(parts[0], parts[1], parts[2], parts[3], parts[4]);
+                    double diem1=0;
+                    double diem2=0;
+                    double diem3=0;
+                    try {
+                        diem1=Double.parseDouble( parts[5]);
+                         diem2 =Double.parseDouble( parts[6]);
+                          diem3=Double.parseDouble( parts[7]);
+                    } catch (Exception e) {
+                    }
+                    SinhVien sv = new SinhVien(parts[0], parts[1], parts[2], parts[3], parts[4], diem1 , diem2, diem3);
                     // Đọc điểm
                     if (parts.length > 5 && !parts[5].isEmpty()) {
                         String[] diemParts = parts[5].split("\\|");

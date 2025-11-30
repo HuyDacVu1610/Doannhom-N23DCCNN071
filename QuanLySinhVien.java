@@ -1,10 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package connectdb;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 
 public class QuanLySinhVien {
@@ -13,7 +11,7 @@ public class QuanLySinhVien {
     private SinhVienDAO dao = new SinhVienDAO();
 
     public QuanLySinhVien() {
-        // Lấy danh sách ban đầu từ DB
+        // Lấy danh sách từ DB
         this.danhSachSV = new ArrayList<>(dao.getAll());
     }
 
@@ -25,51 +23,45 @@ public class QuanLySinhVien {
         this.danhSachSV = danhSachSV;
     }
 
-    // ================== CRUD ==================
+    // ================== CRUD (THÊM / SỬA / XÓA) ==================
 
     public boolean themSinhVien(SinhVien sv) {
-        if (sv == null) {
-            return false;
-        }
-        // kiểm tra trùng MSSV trên DB
+        if (sv == null) return false;
+        
+        // Kiểm tra trùng trong DB
         if (dao.findByMssv(sv.getMssv()) != null) {
             return false;
         }
-        // insert DB
-        if (!dao.insert(sv)) {
-            return false;
+        
+        // Insert vào DB thành công thì mới thêm vào List
+        if (dao.insert(sv)) {
+            danhSachSV.add(sv);
+            return true;
         }
-        // refresh list từ DB
-        this.danhSachSV = new ArrayList<>(dao.getAll());
-        return true;
+        return false;
     }
 
-    public boolean suaSinhVien(String mssv, SinhVien svMoi) {
-        // kiểm tra tồn tại trên DB
-        if (dao.findByMssv(mssv) == null) {
-            return false;
+    public boolean suaSinhVien(String mssvCu, SinhVien svMoi) {
+        if (dao.update(mssvCu, svMoi)) {
+            // Update thành công thì load lại danh sách cho chuẩn
+            this.danhSachSV = new ArrayList<>(dao.getAll());
+            return true;
         }
-        // update DB
-        if (!dao.update(mssv, svMoi)) {
-            return false;
-        }
-        // refresh list từ DB
-        this.danhSachSV = new ArrayList<>(dao.getAll());
-        return true;
+        return false;
     }
 
     public boolean xoaSinhVien(String mssv) {
-        // kiểm tra tồn tại trên DB
-        if (dao.findByMssv(mssv) == null) {
-            return false;
+        if (dao.delete(mssv)) {
+            // Xóa trong List bằng vòng lặp
+            for (int i = 0; i < danhSachSV.size(); i++) {
+                if (danhSachSV.get(i).getMssv().equals(mssv)) {
+                    danhSachSV.remove(i);
+                    break;
+                }
+            }
+            return true;
         }
-        // xóa DB
-        if (!dao.delete(mssv)) {
-            return false;
-        }
-        // refresh list từ DB
-        this.danhSachSV = new ArrayList<>(dao.getAll());
-        return true;
+        return false;
     }
 
     // ================== TÌM KIẾM ==================
@@ -86,26 +78,49 @@ public class QuanLySinhVien {
         return new ArrayList<>(dao.searchByNganh(nganh));
     }
 
-    // ================== SẮP XẾP ==================
+    // ================== SẮP XẾP (ĐÃ SỬA LẠI ĐÚNG LOGIC CỦA BẠN) ==================
 
+    // 1. Sắp xếp theo tên (A-Z)
     public void sapXepTheoTen() {
-        // Lấy lại list từ DB đã sort sẵn theo tên
-        this.danhSachSV = new ArrayList<>(dao.getAllSortedByName());
+        Collections.sort(this.danhSachSV, new Comparator<SinhVien>() {
+            @Override
+            public int compare(SinhVien sv1, SinhVien sv2) {
+                return sv1.getHoTen().compareToIgnoreCase(sv2.getHoTen());
+            }
+        });
     }
 
+    // 2. Sắp xếp theo điểm TB (Giảm dần)
     public void sapXepTheoDiemTB() {
-        // Lấy lại list từ DB đã sort sẵn theo điểm trung bình
-        this.danhSachSV = new ArrayList<>(dao.getAllSortedByDiemTB());
+        Collections.sort(this.danhSachSV, new Comparator<SinhVien>() {
+            @Override
+            public int compare(SinhVien sv1, SinhVien sv2) {
+                // GỌI HÀM CÓ SẴN TRONG FILE SINHVIEN CỦA BẠN
+                double dtb1 = sv1.tinhDiemTrungBinh();
+                double dtb2 = sv2.tinhDiemTrungBinh();
+
+                // So sánh giảm dần (Ai điểm cao xếp trước)
+                return Double.compare(dtb2, dtb1);
+            }
+        });
     }
 
     // ================== TOP & THỐNG KÊ ==================
 
-    // Lấy TOP N sinh viên điểm cao (danhSachSV chỉ chứa top N)
     public void layTopSinhVien(int soLuong) {
-        this.danhSachSV = new ArrayList<>(dao.getTopSinhVien(soLuong));
+        // Sắp xếp trước
+        sapXepTheoDiemTB();
+        
+        // Lấy top N
+        if (this.danhSachSV.size() > soLuong) {
+            ArrayList<SinhVien> topList = new ArrayList<>();
+            for(int i = 0; i < soLuong; i++) {
+                topList.add(this.danhSachSV.get(i));
+            }
+            this.danhSachSV = topList;
+        }
     }
 
-    // Thống kê số lượng SV theo giới tính (Nam/Nữ/...)
     public Map<String, Integer> thongKeTheoGioiTinh() {
         return dao.thongKeTheoGioiTinh();
     }

@@ -1,5 +1,4 @@
-package connectdb;
-
+package doanhaha;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -58,6 +57,9 @@ public class SinhVien extends Nguoi  {
     }
 
     // Getters & Setters
+    public String getHoTen() {
+    return super.getHoTen();
+    }
     public String getMssv() {
         return mssv;
     }
